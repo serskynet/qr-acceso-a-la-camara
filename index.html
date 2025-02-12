@@ -3,18 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streaming en vivo</title>
+    <title>Streaming en Vivo</title>
 </head>
 <body>
-    <h1>Compartir Cámara en Vivo</h1>
+    <h1>Transmisión en Vivo</h1>
     <video id="video" autoplay playsinline></video>
+
     <script>
         async function iniciarTransmision() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 document.getElementById('video').srcObject = stream;
 
-                // Aquí puedes enviar la transmisión a otro dispositivo usando WebRTC o WebSockets
+                // Enviar la transmisión a otro dispositivo
+                const peerConnection = new RTCPeerConnection();
+                stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+
+                peerConnection.onicecandidate = event => {
+                    if (event.candidate) {
+                        console.log("Nuevo candidato ICE:", event.candidate);
+                    }
+                };
+
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                console.log("Oferta SDP:", offer.sdp);
+
+                // Aquí debes enviar 'offer.sdp' a tu PC (por WebSocket, servidor, etc.)
             } catch (error) {
                 alert("No se pudo acceder a la cámara: " + error);
             }
