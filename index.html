@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streaming en vivo</title>
+</head>
+<body>
+    <h1>Compartir Cámara en Vivo</h1>
+    <video id="video" autoplay playsinline></video>
+    <script>
+        async function iniciarTransmision() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                document.getElementById('video').srcObject = stream;
+
+                // Aquí puedes enviar la transmisión a otro dispositivo usando WebRTC o WebSockets
+            } catch (error) {
+                alert("No se pudo acceder a la cámara: " + error);
+            }
+        }
+        iniciarTransmision();
+    </script>
+</body>
+</html>
